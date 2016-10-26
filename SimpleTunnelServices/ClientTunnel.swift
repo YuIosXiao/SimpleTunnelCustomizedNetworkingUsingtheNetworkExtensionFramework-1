@@ -90,7 +90,7 @@ open class ClientTunnel: Tunnel {
 			return
 		}
 
-		// First, read the total length of the packet.
+		// First, read the total length of the packet from server.
 		targetConnection.readMinimumLength(MemoryLayout<UInt32>.size, maximumLength: MemoryLayout<UInt32>.size) { data, error in
 			if let readError = error {
 				simpleTunnelLog("Got an error on the tunnel connection: \(readError)")
