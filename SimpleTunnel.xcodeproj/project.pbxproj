@@ -215,7 +215,6 @@
 		C46318B41AC35F0600849278 /* EnumPickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnumPickerController.swift; sourceTree = "<group>"; };
 		C46451531AC3199300617E08 /* OnDemandRuleListController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnDemandRuleListController.swift; sourceTree = "<group>"; };
 		C4751DDF1ACB509A00C116E5 /* ProxyServerAddEditController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxyServerAddEditController.swift; sourceTree = "<group>"; };
-		C47810631B42E10900B584D7 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C490D9001AC1AA8700FB67E9 /* AddEditConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddEditConfiguration.swift; sourceTree = "<group>"; };
 		C497D4201B42185000EDD37E /* FilterUtilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterUtilities.swift; sourceTree = "<group>"; };
 		C498857F1ACB12BB00E490C3 /* ProxySettingsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxySettingsController.swift; sourceTree = "<group>"; };
@@ -346,7 +345,6 @@
 		B07CCB2E1A8940E600A4F1E5 = {
 			isa = PBXGroup;
 			children = (
-				C47810631B42E10900B584D7 /* README.md */,
 				442B692B1B0671A100382B6D /* AppProxy */,
 				B07CCB391A8940E600A4F1E5 /* SimpleTunnel */,
 				B07CCB6E1A89414500A4F1E5 /* PacketTunnel */,
@@ -1208,10 +1206,12 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "tunnel_server/tunnel_server-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0.1;
 				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
@@ -1222,9 +1222,11 @@
 				CLANG_ENABLE_MODULES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_OBJC_BRIDGING_HEADER = "tunnel_server/tunnel_server-Bridging-Header.h";
+				SWIFT_VERSION = 3.0.1;
 				VALID_ARCHS = x86_64;
 			};
 			name = Release;
