@@ -34,13 +34,12 @@ class UDPServerConnection: Connection {
 
 	/// Convert a sockaddr structure into an IP address string and port.
     func getEndpointFromSocketAddress(socketAddressPointer: UnsafePointer<sockaddr>) -> (host: String, port: Int)? {
-		let socketAddress = UnsafePointer<sockaddr>(socketAddressPointer).pointee
-
-		switch Int32(socketAddress.sa_family) {
-			case AF_INET:
-                var socketAddressInet = socketAddressPointer.withMemoryRebound(to: sockaddr_in.self, capacity: 1, { $0})
-                var sinAddr : UnsafeMutablePointer<in_addr>? = nil;
-                withUnsafeMutablePointer(to: &sinAddr) {$0.pointee = socketAddressInet!.pointee.sin_addr};
+        
+		switch socketAddressPointer.pointee.sa_family {
+			case UInt8(AF_INET):
+                let socketAddressInet = socketAddressPointer.withMemoryRebound(to: sockaddr_in.self, capacity: 1, { $0 })
+                var addr = socketAddressInet.pointee.sin_addr;
+                let sinAddr = withUnsafePointer(to: &addr, { $0 })
                 
 				let length = Int(INET_ADDRSTRLEN) + 2
 				var buffer = [CChar](repeating: 0, count: length)
@@ -48,12 +47,10 @@ class UDPServerConnection: Connection {
 				let port = Int(UInt16(socketAddressInet.pointee.sin_port).byteSwapped)
                 return (String(validatingUTF8: hostCString!)!, port)
 
-			case AF_INET6:
-                var socketAddressInet6 = socketAddressPointer.withMemoryRebound(to: sockaddr_in6.self, capacity: 1, { $0 })
-                
-                var sinAddr : UnsafeMutablePointer<in6_addr>? = nil;
-                withUnsafeMutablePointer(to: &sinAddr) {$0.pointee = socketAddressInet6.pointee.sin6_addr};
-                
+			case UInt8(AF_INET6):
+                let socketAddressInet6 = socketAddressPointer.withMemoryRebound(to: sockaddr_in6.self, capacity: 1, { $0 })
+                var addr = socketAddressInet6.pointee.sin6_addr;
+                let sinAddr = withUnsafePointer(to: &addr, { $0 })
                 
 				let length = Int(INET6_ADDRSTRLEN) + 2
 				var buffer = [CChar](repeating: 0, count: length)
@@ -101,8 +98,8 @@ class UDPServerConnection: Connection {
 			let response = [UInt8](repeating: 0, count: 4096)
 			let UDPSocket = source.handle
 
-			let bytesRead = withUnsafeMutablePointer(&socketAddress) {
-				recvfrom(Int32(UDPSocket), UnsafeMutablePointer<Void>(response), response.count, 0, UnsafeMutablePointer($0), &socketAddressLength)
+			let bytesRead = withUnsafeMutablePointer(to: &socketAddress) {
+				recvfrom(Int32(UDPSocket), UnsafeMutableRawPointer(mutating: response), response.count, 0, $0.withMemoryRebound(to: sockaddr.self, capacity: 1, { $0 }), &socketAddressLength)
 			}
 
 			guard bytesRead >= 0 else {
@@ -128,7 +125,7 @@ class UDPServerConnection: Connection {
 
 			let responseDatagram = NSData(bytes: UnsafeRawPointer(response), length: bytesRead)
 			simpleTunnelLog("UDP connection id \(self.identifier) received = \(bytesRead) bytes from host = \(endpoint.host) port = \(endpoint.port)")
-			self.tunnel?.sendDataWithEndPoint(responseDatagram, forConnection: self.identifier, host: endpoint.host, port: endpoint.port)
+			self.tunnel?.sendDataWithEndPoint(responseDatagram as Data, forConnection: self.identifier, host: endpoint.host, port: endpoint.port)
 		}
 
 		(newResponseSource as! DispatchObject).resume()
@@ -161,7 +158,7 @@ class UDPServerConnection: Connection {
 				serverAddress.setPort(port)
 
 				sent = withUnsafePointer(to: &serverAddress.sin) {
-					sendto(UDPSocket, data.bytes, data.length, 0, UnsafePointer($0), socklen_t(serverAddress.sin.sin_len))
+					sendto(UDPSocket, data.bytes, data.length, 0, $0.withMemoryRebound(to: sockaddr.self, capacity: 1, { $0 }), socklen_t(serverAddress.sin.sin_len))
 				}
 
 			case AF_INET6:
@@ -173,7 +170,7 @@ class UDPServerConnection: Connection {
 				serverAddress.setPort(port)
 
 				sent = withUnsafePointer(to: &serverAddress.sin6) {
-					sendto(UDPSocket, data.bytes, data.length, 0, UnsafePointer($0), socklen_t(serverAddress.sin6.sin6_len))
+					sendto(UDPSocket, data.bytes, data.length, 0, $0.withMemoryRebound(to: sockaddr.self, capacity: 1, { $0 }), socklen_t(serverAddress.sin6.sin6_len))
 				}
 
 			default:
