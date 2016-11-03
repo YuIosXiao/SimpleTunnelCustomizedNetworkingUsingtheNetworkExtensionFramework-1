@@ -163,7 +163,10 @@ class AddEditConfiguration: ConfigurationParametersViewController {
 			// No manager was given, create a new configuration.
 			let newManager = NETunnelProviderManager()
             
-            newManager.protocolConfiguration = NETunnelProviderProtocol() // NEVPNProtocolIKEv2
+            let prot = NETunnelProviderProtocol()
+//            prot.providerBundleIdentifier = "com.pixelcyber.thor.packettunnel"
+            newManager.protocolConfiguration = prot // NEVPNProtocolIKEv2
+            
 			newManager.localizedDescription = "Demo VPN"
 			newManager.protocolConfiguration?.serverAddress = "TunnelServer"
 			targetManager = newManager

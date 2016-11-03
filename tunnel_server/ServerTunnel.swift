@@ -317,7 +317,7 @@ class ServerDelegate : NSObject, NetServiceDelegate {
 
 	/// Handle the "failed to publish" event.
 	func netService(_ sender: NetService, didNotPublish errorDict: [String : NSNumber]) {
-		simpleTunnelLog("Failed to publish network service")
+		simpleTunnelLog("Failed to publish network service: \(errorDict)")
 		exit(1)
 	}
 

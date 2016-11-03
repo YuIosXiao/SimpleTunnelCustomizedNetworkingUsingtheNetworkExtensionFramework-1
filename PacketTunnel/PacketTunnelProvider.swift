@@ -34,6 +34,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, TunnelDelegate, ClientTunnel
 		newTunnel.delegate = self
 
 		if let error = newTunnel.startTunnel(self) {
+            cancelTunnelWithError(error)
 			completionHandler(error as NSError)
 		}
 		else {
@@ -65,6 +66,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider, TunnelDelegate, ClientTunnel
 		let responseData = "Hello app".data(using: String.Encoding.utf8)
 		completionHandler?(responseData)
 	}
+    
+    
 
 	// MARK: TunnelDelegate
 
@@ -98,6 +101,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider, TunnelDelegate, ClientTunnel
 	/// Handle the server sending a configuration.
 	func tunnelDidSendConfiguration(_ targetTunnel: Tunnel, configuration: [String : AnyObject]) {
 	}
+    
+    
 
 	// MARK: ClientTunnelConnectionDelegate
 
@@ -114,8 +119,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider, TunnelDelegate, ClientTunnel
 		// Set the virtual interface settings.
 		setTunnelNetworkSettings(settings) { error in
 			var startError: NSError?
-			if let error = error {
-				simpleTunnelLog("Failed to set the tunnel network settings: \(error)")
+			if let err = error {
+                self.cancelTunnelWithError(err)
+				simpleTunnelLog("Failed to set the tunnel network settings: \(err)")
 				startError = SimpleTunnelError.badConfiguration as NSError
 			}
 			else {
@@ -132,8 +138,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider, TunnelDelegate, ClientTunnel
 	/// Handle the event of the logical flow of packets being torn down.
 	func tunnelConnectionDidClose(_ connection: ClientTunnelConnection, error: NSError?) {
 		tunnelConnection = nil
+        cancelTunnelWithError(error)
 		tunnel?.closeTunnelWithError(error)
 	}
+    
+    
 
 	/// Create the tunnel network settings to be applied to the virtual interface.
 	func createTunnelSettingsFromConfiguration(_ configuration: [NSObject: AnyObject]) -> NEPacketTunnelNetworkSettings? {
